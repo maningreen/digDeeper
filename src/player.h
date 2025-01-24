@@ -29,6 +29,8 @@ void managePlayerInput(Player* plr, float delta);
 
 void playerApplyVelocity(Player* plr);
 
+void managePlayerMovement(Player* plr, void* world, Vector2 worldDimensions);
+
 void managePlayer(Player* plr, void* world, Vector2 worldDimensions, float delta);
 
 #endif

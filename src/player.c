@@ -23,43 +23,49 @@ void playerApplyVelocity(Player* plr) {
   plr->position = Vector2Add(plr->position, plr->velocity);
 }
 
-void managePlayerMotion(Player* plr, void* world, Vector2 worldDimensions) {
+void managePlayerMovement(Player* plr, void* world, Vector2 worldDimensions) {
   unsigned int (*worldArr)[(int)worldDimensions.x] = world;
   Player stepPlayer = *plr; // i'm stuck! /j
+  stepPlayer.col.r = 0;
   Vector2 vel = {plr->velocity.x / playerStepCount, plr->velocity.y / playerStepCount};
-  Vector2 prePos = stepPlayer.position;
-  for(unsigned short i = 0; i < playerStepCount; i++) {
-    if(plr->velocity.x != 0) {
-      stepPlayer.position = Vector2Add((Vector2){vel.x, 0}, stepPlayer.position);
+  for(stepPlayer.col.a = 0; stepPlayer.col.a < playerStepCount; stepPlayer.col.a++) {
+    if(!(stepPlayer.col.r & 1)) {
+      float prePos = stepPlayer.position.x;
+      stepPlayer.position.x += vel.x;
       stepPlayer.velocity = getClosestBlockToPosition(world, worldDimensions, stepPlayer.position); //this is the most fucked up shit
-      if(worldArr[(int)stepPlayer.velocity.x][(int)stepPlayer.velocity.y] == airCode)
-        goto cont;
-      Vector2 closestPosition = getBlockPosition(stepPlayer.velocity);
-      if(CheckCollisionCircleRec(stepPlayer.position, 1, (Rectangle){closestPosition.x, closestPosition.y, blockLength, blockLength})) {
-        stepPlayer.position = prePos;
-        plr->velocity.x = 0;
-      }
+      for(int i = -1; i < 2; i++)
+        for(int j = -1; j < 2; j++) {
+          if(worldArr[i + (int)stepPlayer.velocity.x][j + (int)stepPlayer.velocity.y] == airCode)
+            continue;
+          Vector2 itemPosition = getBlockPosition(Vector2Add(stepPlayer.velocity, (Vector2){i, j}));
+          if(CheckCollisionCircleRec(stepPlayer.position, stepPlayer.radius, (Rectangle){itemPosition.x, itemPosition.y, blockLength, blockLength})) {
+            stepPlayer.position.x = prePos;
+            stepPlayer.col.r |= 1;
+            plr->velocity.x = 0;
+          }
+        }
     }
   cont:
-    prePos = stepPlayer.position;
-    if(plr->velocity.y != 0) {
-      stepPlayer.position = Vector2Add((Vector2){0, vel.y}, stepPlayer.position);
-      stepPlayer.velocity = getClosestBlockToPosition(world, worldDimensions, stepPlayer.position); //this is the most fucked up shit
-      if(worldArr[(int)stepPlayer.velocity.x][(int)stepPlayer.velocity.y] == airCode)
-        continue;
-      Vector2 closestPosition = getBlockPosition(stepPlayer.velocity);
-      if(CheckCollisionCircleRec(stepPlayer.position, 1, (Rectangle){closestPosition.x, closestPosition.y, blockLength, blockLength})) {
-        stepPlayer.position = prePos;
-        plr->velocity.y = 0;
-      }
+    if(!(stepPlayer.col.r & 2)) {
+      float prePos = stepPlayer.position.y;
+      stepPlayer.position.y += vel.y;
+      stepPlayer.velocity = getClosestBlockToPosition(world, worldDimensions, stepPlayer.position);
+      for(int i = -1; i < 2; i++)
+        for(int j = -1; j < 2; j++) {
+          if(worldArr[i + (int)stepPlayer.velocity.x][j + (int)stepPlayer.velocity.y] == airCode)
+            continue;
+          Vector2 itemPosition = getBlockPosition(Vector2Add(stepPlayer.velocity, (Vector2){i, j}));
+          if(CheckCollisionCircleRec(stepPlayer.position, stepPlayer.radius, (Rectangle){itemPosition.x, itemPosition.y, blockLength, blockLength})) {
+            stepPlayer.position.y = prePos;
+            stepPlayer.col.r |= 2;
+            plr->velocity.y = 0;
+          }
+        }
     }
   }
   plr->position = stepPlayer.position;
 }
 
 void managePlayer(Player* plr, void* world, Vector2 worldDimensions, float delta) {
-  managePlayerMotion(plr, world, worldDimensions);
-  Vector2 blockI = getClosestBlockToPosition(world, worldDimensions, plr->position);
-  Vector2 blockP = getBlockPosition(blockI);
-  drawBlock(debugCode, blockI);
+  managePlayerMovement(plr, world, worldDimensions);
 }

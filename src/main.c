@@ -6,7 +6,8 @@
 #include "world.h"
 #include "player.h"
 
-#define defaultScreenDimensions (Vector2){500 * 16/9, 500 / (16 / 9)}
+#define defaultScreenDimensionScalar 500
+#define defaultScreenDimensions (Vector2){defaultScreenDimensionScalar * 16/9, defaultScreenDimensionScalar / (16 / 9)}
 #define backroundColour BLACK
 
 #define quitKey KEY_Q
@@ -21,7 +22,7 @@ int main() {
   unsigned int world[(int)worldDimensions.x][(int)worldDimensions.y];
   initWorld((void*)world, worldDimensions);
 
-  Player plr = {{0}, {0}, playerRadius, playerColour};
+  Player plr = {{100, 100}, {0}, playerRadius, playerColour};
 
   while(!WindowShouldClose()) {
     float delta = GetFrameTime();
@@ -31,9 +32,8 @@ int main() {
     drawWorld(world, worldDimensions);
 
     managePlayerInput(&plr, delta);
-    playerApplyVelocity(&plr);
 
-    managePlayer(&plr, world, worldDimensions, delta);
+    managePlayerMovement(&plr, world, worldDimensions);
     DrawCircleV(plr.position, plr.radius, plr.col);
 
     plr.velocity = Vector2Scale(plr.velocity, playerFriction);
