@@ -4,7 +4,7 @@ a game about mining and stuff
 
 ---
 
-current status
+# current status
 
 pre-alpha
 
