@@ -23,7 +23,8 @@ void drawWorld(void* world, Vector2 worldDimensions) {
   Vector2 blockPos = {0, 0};
   for(unsigned int i = 0; i < worldDimensions.x; i++) {
     for(unsigned int j = 0; j < worldDimensions.y; j++) {
-      if(i * blockLength > screenDimensions.x || j * blockLength > screenDimensions.y) break;
+      if(blockPos.y > screenDimensions.x || -blockPos.x > screenDimensions.y) break;
+      Colour col;
       drawBlockV(worldArr[i][j], blockPos);
     end:
       blockPos.y += blockLength;

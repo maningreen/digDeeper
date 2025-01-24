@@ -23,6 +23,7 @@ int main() {
   initWorld((void*)world, worldDimensions);
 
   Player plr = {{100, 100}, {0}, playerRadius, playerColour};
+  Camera2D camera;
 
   while(!WindowShouldClose()) {
     float delta = GetFrameTime();
