@@ -1,5 +1,5 @@
 CC = gcc
-LDFLAGS = -lraylib -lm
+LDFLAGS = -lraylib -lm -lpthread
 SRC = src/*.c
 OUT = digDeeper
 
