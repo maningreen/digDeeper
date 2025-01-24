@@ -1,4 +1,4 @@
-digDeeper
+./digDeeper
 # excecutable
-prof
-gmon.out
+./prof
+./gmon.out
