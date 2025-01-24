@@ -1,4 +1,2 @@
-./digDeeper
+build/*
 # excecutable
-./prof
-./gmon.out
