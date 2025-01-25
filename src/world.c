@@ -17,14 +17,14 @@ int drawBlockV(unsigned int blockCode, Vector2 position) {
   return 0;
 }
 
-void drawWorld(stdWorldArgs args) {
-  Vector2 screenDimensions = {GetScreenWidth(), GetScreenHeight()};
+void drawWorld(stdWorldArgs args, Camera2D camera) {
+  Vector2 screenDimensions = {GetScreenWidth() + camera.target.y - camera.offset.y, GetScreenHeight() - camera.target.x + camera.offset.x};
   unsigned int (*worldArr)[(int)args.worldDimensions.x] = args.world;
   Vector2 worldDims = args.worldDimensions;
   Vector2 blockPos = {0, 0};
   for(unsigned int i = 0; i < worldDims.x; i++) {
     for(unsigned int j = 0; j < worldDims.y; j++) {
-      if(blockPos.y > screenDimensions.x || -blockPos.x > screenDimensions.y) break;
+      if(blockPos.y > screenDimensions.x || -blockPos.x > screenDimensions.y) goto end;
       drawBlockV(worldArr[i][j], blockPos);
     end:
       blockPos.y += blockLength;

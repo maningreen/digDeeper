@@ -30,7 +30,7 @@ typedef struct {
 
 void initWorld(stdWorldArgs args);
 
-void drawWorld(stdWorldArgs args);
+void drawWorld(stdWorldArgs args, Camera2D camera);
 
 void* initWorldT(void* args);
 
