@@ -8,8 +8,13 @@
 void initWorld(stdWorldArgs args) {
   unsigned int (*worldArr)[(int)args.worldDimensions.x] = args.world;
   for(unsigned int i = 0; i < args.worldDimensions.x; i++)
-    for(unsigned int j = 0; j < args.worldDimensions.y; j++)
+    for(unsigned int j = 0; j < args.worldDimensions.y; j++) {
+      if(j == 0 || i == 0 || j + 1 == args.worldDimensions.y || i + 1 == args.worldDimensions.x) {
+        worldArr[i][j] = stoneCode;
+        continue;
+      }
       worldArr[i][j] = (((float)rand() / (float)RAND_MAX) / .75f) > airBias ? (rand() % (blockCount - 1)) + 1 : airCode;
+    }
 }
 
 int drawBlockV(unsigned int blockCode, Vector2 position) {
@@ -17,24 +22,24 @@ int drawBlockV(unsigned int blockCode, Vector2 position) {
   return 0;
 }
 
-void drawWorld(stdWorldArgs args, Camera2D camera) {
-  Vector2 screenDimensions = {GetScreenWidth() + camera.target.y - camera.offset.y, GetScreenHeight() - camera.target.x + camera.offset.x};
+void drawWorld(stdWorldArgs args) {
+  Vector2 screenDimensions = {GetScreenWidth() + args.camera.target.y - args.camera.offset.y, GetScreenHeight() - args.camera.target.x + args.camera.offset.x};
   unsigned int (*worldArr)[(int)args.worldDimensions.x] = args.world;
-  Vector2 worldDims = args.worldDimensions;
-  Vector2 blockPos = {0, 0};
-  for(unsigned int i = 0; i < worldDims.x; i++) {
-    for(unsigned int j = 0; j < worldDims.y; j++) {
-      if(blockPos.y > screenDimensions.x || -blockPos.x > screenDimensions.y) goto end;
+  for(unsigned short i = 0; i < args.worldDimensions.x; i++) {
+    for(unsigned short j = 0; j < args.worldDimensions.y; j++) {
+      Vector2 blockPos = {i * blockLength, j * blockLength};
+      if(blockPos.y > screenDimensions.x || -blockPos.x > screenDimensions.y) continue;
       drawBlockV(worldArr[i][j], blockPos);
-    end:
-      blockPos.y += blockLength;
     }
-    blockPos.y = 0;
-    blockPos.x += blockLength;
   }
 }
 
 void* initWorldT(void* args) {
+  return 0;
+}
+
+void* drawWorldT(void* args) {
+  drawWorld(*((stdWorldArgs*)args));
   return 0;
 }
 

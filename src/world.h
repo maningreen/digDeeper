@@ -14,25 +14,30 @@ enum blockCodes {
   airCode,
   rockCode,
   mossCode,
+  stoneCode,
   debugCode,
 };
 #define airColour (Colour){0, 0, 0, 0}
 #define rockColour (Colour){176, 95, 64, 255} //#B15F40
 #define mossColour (Colour){37, 167, 32, 255} //#25bb20
+#define stoneColour (Colour){48, 48, 48, 255}//#303030
 #define debugColour (Colour){255, 0, 127, 255}//#ff007f
 
-#define colArr (Colour[]){airColour, rockColour, mossColour, debugColour}
+#define colArr (Colour[]){airColour, rockColour, mossColour, stoneColour, debugColour}
 
 typedef struct {
   void* world;
   Vector2 worldDimensions;
+  Camera2D camera;
 } stdWorldArgs;
 
 void initWorld(stdWorldArgs args);
 
-void drawWorld(stdWorldArgs args, Camera2D camera);
+void drawWorld(stdWorldArgs args);
 
 void* initWorldT(void* args);
+
+void* drawWorldT(void* args);
 
 Rectangle getBlockRect(Vector2 position);
 

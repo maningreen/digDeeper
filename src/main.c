@@ -28,9 +28,11 @@ int main() {
   Player plr = {Vector2Add(getBlockPosition(getFirstAirBlock((stdWorldArgs){world, worldDimensions})), (Vector2){blockLength / 2, blockLength / 2}), {0}, playerRadius, playerColour};
   Camera2D camera = {{0}, {0}, 0, 1};
 
-
+  double prevTime = GetTime();
   while(!WindowShouldClose()) {
-    float delta = GetFrameTime();
+    double curTime = GetTime();
+    float delta = curTime - prevTime;
+    prevTime = curTime;
 
     applyCameraSmoothing(&camera, plr.position);
     camera.offset = (Vector2){GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f};
@@ -39,15 +41,19 @@ int main() {
 
     BeginMode2D(camera);
     ClearBackground(backroundColour);
-    drawWorld((stdWorldArgs){world, worldDimensions}, camera);
+    pthread_create(&tid, NULL, drawWorldT, &(stdWorldArgs){world, worldDimensions, camera});
 
     managePlayerInput(&plr, delta);
 
     managePlayerMovement(&plr, world, worldDimensions);
+    pthread_join(tid, 0);
     DrawCircleV(plr.position, plr.radius, plr.col);
+
 
     plr.velocity = Vector2Scale(plr.velocity, playerFriction);
 
+    EndMode2D();
+    DrawFPS(0, 0);
 
     EndDrawing();
 

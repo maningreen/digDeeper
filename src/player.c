@@ -33,9 +33,11 @@ void managePlayerMovement(Player* plr, void* world, Vector2 worldDimensions) {
       float prePos = stepPlayer.position.x;
       stepPlayer.position.x += vel.x;
       stepPlayer.velocity = getClosestBlockToPosition(world, worldDimensions, stepPlayer.position); //this is the most fucked up shit
-      for(int i = -1; i < 2; i++)
+      for(int i = -1; i < 2; i++) {
+        if(stepPlayer.velocity.x + i < 0 || stepPlayer.velocity.x + i >= worldDimensions.x)
+          continue;
         for(int j = -1; j < 2; j++) {
-          if(worldArr[i + (int)stepPlayer.velocity.x][j + (int)stepPlayer.velocity.y] == airCode)
+          if(worldArr[i + (int)stepPlayer.velocity.x][j + (int)stepPlayer.velocity.y] == airCode || stepPlayer.velocity.y + j < 0 || stepPlayer.velocity.y + j >= worldDimensions.y)
             continue;
           Vector2 itemPosition = getBlockPosition(Vector2Add(stepPlayer.velocity, (Vector2){i, j}));
           if(CheckCollisionCircleRec(stepPlayer.position, stepPlayer.radius, (Rectangle){itemPosition.x, itemPosition.y, blockLength, blockLength})) {
@@ -44,15 +46,18 @@ void managePlayerMovement(Player* plr, void* world, Vector2 worldDimensions) {
             plr->velocity.x = 0;
           }
         }
+      }
     }
   cont:
     if(!(stepPlayer.col.r & 2)) {
       float prePos = stepPlayer.position.y;
       stepPlayer.position.y += vel.y;
       stepPlayer.velocity = getClosestBlockToPosition(world, worldDimensions, stepPlayer.position);
-      for(int i = -1; i < 2; i++)
+      for(int i = -1; i < 2; i++) {
+        if(stepPlayer.velocity.x + i < 0 || stepPlayer.velocity.x + i >= worldDimensions.x)
+          continue;
         for(int j = -1; j < 2; j++) {
-          if(worldArr[i + (int)stepPlayer.velocity.x][j + (int)stepPlayer.velocity.y] == airCode)
+          if(worldArr[i + (int)stepPlayer.velocity.x][j + (int)stepPlayer.velocity.y] == airCode || stepPlayer.velocity.y + j < 0 || stepPlayer.velocity.y + j >= worldDimensions.y)
             continue;
           Vector2 itemPosition = getBlockPosition(Vector2Add(stepPlayer.velocity, (Vector2){i, j}));
           if(CheckCollisionCircleRec(stepPlayer.position, stepPlayer.radius, (Rectangle){itemPosition.x, itemPosition.y, blockLength, blockLength})) {
@@ -61,6 +66,7 @@ void managePlayerMovement(Player* plr, void* world, Vector2 worldDimensions) {
             plr->velocity.y = 0;
           }
         }
+      }
     }
   }
   plr->position = stepPlayer.position;
