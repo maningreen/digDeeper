@@ -1,12 +1,14 @@
 #include <raylib.h>
 #include <raymath.h>
+#include <signal.h>
 #include <time.h>
 #include <math.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "world.h"
 #include "player.h"
 
-#define defaultScreenDimensionScalar 500
+#define defaultScreenDimensionScalar 700
 #define defaultScreenDimensions (Vector2){defaultScreenDimensionScalar * 16/9, defaultScreenDimensionScalar / (16 / 9)}
 #define backroundColour BLACK
 
@@ -19,18 +21,21 @@ int main() {
   InitWindow(defaultScreenDimensions.x, defaultScreenDimensions.y, "Dig Deeper");
   SetTargetFPS(60);
 
-  unsigned int world[(int)worldDimensions.x][(int)worldDimensions.y];
-  initWorld((void*)world, worldDimensions);
+  pthread_t tid;
 
-  Player plr = {{100, 100}, {0}, playerRadius, playerColour};
+  unsigned int world[(int)worldDimensions.x][(int)worldDimensions.y];
+  initWorld((stdWorldArgs){world, worldDimensions});
+
+  Player plr = {Vector2Add(getBlockPosition(getFirstAirBlock((stdWorldArgs){world, worldDimensions})), (Vector2){blockLength / 2, blockLength / 2}), {0}, playerRadius, playerColour};
   Camera2D camera;
+
 
   while(!WindowShouldClose()) {
     float delta = GetFrameTime();
     BeginDrawing();
 
     ClearBackground(backroundColour);
-    drawWorld(world, worldDimensions);
+    drawWorld((stdWorldArgs){world, worldDimensions});
 
     managePlayerInput(&plr, delta);
 
@@ -38,6 +43,7 @@ int main() {
     DrawCircleV(plr.position, plr.radius, plr.col);
 
     plr.velocity = Vector2Scale(plr.velocity, playerFriction);
+
 
     EndDrawing();
 

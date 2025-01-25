@@ -4,24 +4,35 @@
 #include <raylib.h>
 #include "include.h"
 
-#define blockLength 70
+#define blockLength 50
 
-#define blockCount 2
+#define blockCount 3
+
+#define airBias .9
 
 enum blockCodes {
   airCode,
   rockCode,
+  mossCode,
   debugCode,
 };
 #define airColour (Colour){0, 0, 0, 0}
 #define rockColour (Colour){176, 95, 64, 255} //#B15F40
+#define mossColour (Colour){37, 167, 32, 255} //#25bb20
 #define debugColour (Colour){255, 0, 127, 255}//#ff007f
 
-#define colArr (Colour[]){airColour, rockColour, debugColour}
+#define colArr (Colour[]){airColour, rockColour, mossColour, debugColour}
 
-void initWorld(void* world, Vector2 worldDimensions);
+typedef struct {
+  void* world;
+  Vector2 worldDimensions;
+} stdWorldArgs;
 
-void drawWorld(void* world, Vector2 worldDimensions);
+void initWorld(stdWorldArgs args);
+
+void drawWorld(stdWorldArgs args);
+
+void* initWorldT(void* args);
 
 Rectangle getBlockRect(Vector2 position);
 
@@ -33,5 +44,7 @@ int drawBlockV(unsigned int blockCode, Vector2 position);
 Vector2 getClosestBlockToPosition(void* world, Vector2 worldDimensions, Vector2 position);
 
 Vector2 getBlockPosition(Vector2 index);
+
+Vector2 getFirstAirBlock(stdWorldArgs args);
 
 #endif

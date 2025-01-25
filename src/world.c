@@ -5,11 +5,11 @@
 #include <raymath.h>
 #include <stdlib.h>
 
-void initWorld(void* world, Vector2 worldDimensions) {
-  unsigned int (*worldArr)[(int)worldDimensions.x] = world;
-  for(unsigned int i = 0; i < worldDimensions.x; i++)
-    for(unsigned int j = 0; j < worldDimensions.y; j++)
-      worldArr[i][j] = rand() % blockCount;
+void initWorld(stdWorldArgs args) {
+  unsigned int (*worldArr)[(int)args.worldDimensions.x] = args.world;
+  for(unsigned int i = 0; i < args.worldDimensions.x; i++)
+    for(unsigned int j = 0; j < args.worldDimensions.y; j++)
+      worldArr[i][j] = (((float)rand() / (float)RAND_MAX) / .75f) > airBias ? (rand() % (blockCount - 1)) + 1 : airCode;
 }
 
 int drawBlockV(unsigned int blockCode, Vector2 position) {
@@ -17,14 +17,14 @@ int drawBlockV(unsigned int blockCode, Vector2 position) {
   return 0;
 }
 
-void drawWorld(void* world, Vector2 worldDimensions) {
+void drawWorld(stdWorldArgs args) {
   Vector2 screenDimensions = {GetScreenWidth(), GetScreenHeight()};
-  unsigned int (*worldArr)[(int)worldDimensions.x] = world;
+  unsigned int (*worldArr)[(int)args.worldDimensions.x] = args.world;
+  Vector2 worldDims = args.worldDimensions;
   Vector2 blockPos = {0, 0};
-  for(unsigned int i = 0; i < worldDimensions.x; i++) {
-    for(unsigned int j = 0; j < worldDimensions.y; j++) {
+  for(unsigned int i = 0; i < worldDims.x; i++) {
+    for(unsigned int j = 0; j < worldDims.y; j++) {
       if(blockPos.y > screenDimensions.x || -blockPos.x > screenDimensions.y) break;
-      Colour col;
       drawBlockV(worldArr[i][j], blockPos);
     end:
       blockPos.y += blockLength;
@@ -32,6 +32,10 @@ void drawWorld(void* world, Vector2 worldDimensions) {
     blockPos.y = 0;
     blockPos.x += blockLength;
   }
+}
+
+void* initWorldT(void* args) {
+  return 0;
 }
 
 Rectangle getBlockRect(Vector2 position) {
@@ -52,4 +56,15 @@ Vector2 getClosestBlockToPosition(void* world, Vector2 worldDimensions, Vector2 
   Vector2 floorP = {floorf(positionInArr.x), floorf(positionInArr.y)};
   Vector2 offsetFromArray = Vector2Subtract(positionInArr, floorP);
   return Vector2Add(floorP, (Vector2){floorf(offsetFromArray.x * offsetFromArray.x), floorf(offsetFromArray.y * offsetFromArray.y)});
+}
+
+Vector2 getFirstAirBlock(stdWorldArgs args) {
+  unsigned int (*worldArr)[(int)args.worldDimensions.x] = args.world;
+  for(int i = 0; i < args.worldDimensions.x; i++)
+    for(int j = 0; j < args.worldDimensions.y; j++) {
+      if(worldArr[i][j] != airCode)
+        continue;
+      return (Vector2){i, j};
+    }
+  return Vector2Zero();
 }
