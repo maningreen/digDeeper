@@ -8,7 +8,7 @@
 
 #define blockCount 3
 
-#define airBias .9
+#define airBias .96
 
 enum blockCodes {
   airCode,
