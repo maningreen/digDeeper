@@ -13,7 +13,7 @@ void initWorld(stdWorldArgs args) {
         worldArr[i][j] = stoneCode;
         continue;
       }
-      worldArr[i][j] = (((float)rand() / (float)RAND_MAX) / .75f) > airBias ? (rand() % (blockCount - 1)) + 1 : airCode;
+      worldArr[i][j] = (((float)rand() / (float)RAND_MAX) / airBias) > 1 ? ((rand() % (blockCount - 1)) + 1) : airCode;
     }
 }
 
@@ -23,19 +23,25 @@ int drawBlockV(unsigned int blockCode, Vector2 position) {
 }
 
 void drawWorld(stdWorldArgs args) {
-  Vector2 screenDimensions = {GetScreenWidth() + args.camera.target.y - args.camera.offset.y, GetScreenHeight() - args.camera.target.x + args.camera.offset.x};
+  Vector2 screenDimensions = {GetScreenWidth() + (args.camera.target.x - args.camera.offset.x), GetScreenHeight() + (args.camera.target.y - args.camera.offset.y)};
   unsigned int (*worldArr)[(int)args.worldDimensions.x] = args.world;
+  args.camera.target = Vector2Subtract(Vector2Subtract(args.camera.target, args.camera.offset), (Vector2){blockLength, blockLength}); //reusing the variable
+  Vector2 blockPos;
   for(unsigned short i = 0; i < args.worldDimensions.x; i++) {
+    blockPos.x = i * blockLength;
+    if(blockPos.x < args.camera.target.x) continue;
+    if(blockPos.x > screenDimensions.x) break;
     for(unsigned short j = 0; j < args.worldDimensions.y; j++) {
-      Vector2 blockPos = {i * blockLength, j * blockLength};
-      if(blockPos.y > screenDimensions.x || -blockPos.x > screenDimensions.y) continue;
+      blockPos.y = j * blockLength;
+      if(blockPos.y < args.camera.target.y) continue;
+      if(blockPos.y > screenDimensions.y) break;
       drawBlockV(worldArr[i][j], blockPos);
     }
   }
 }
 
 void* initWorldT(void* args) {
-  return 0;
+  return 0; 
 }
 
 void* drawWorldT(void* args) {

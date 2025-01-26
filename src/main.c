@@ -1,5 +1,6 @@
 #include <raylib.h>
 #include <raymath.h>
+#include <string.h>
 #include <time.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -13,7 +14,7 @@
 
 #define quitKey KEY_Q
 
-#define worldDimensions (Vector2){100, 100}
+#define worldDimensions (Vector2){200, 200}
 
 int main() {
   srand(time(0));
@@ -41,14 +42,13 @@ int main() {
 
     BeginMode2D(camera);
     ClearBackground(backroundColour);
-    pthread_create(&tid, NULL, drawWorldT, &(stdWorldArgs){world, worldDimensions, camera});
+    drawWorld((stdWorldArgs){world, worldDimensions, camera});
 
     managePlayerInput(&plr, delta);
 
     managePlayerMovement(&plr, world, worldDimensions);
-    pthread_join(tid, 0);
-    DrawCircleV(plr.position, plr.radius, plr.col);
 
+    DrawCircleV(plr.position, plr.radius, plr.col);
 
     plr.velocity = Vector2Scale(plr.velocity, playerFriction);
 
